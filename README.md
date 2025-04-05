@@ -1,4 +1,4 @@
-# 🔍 PatternKt - Kotlin Pattern Matching DSL
+# 🔍 Kt-pattern - Kotlin Pattern Matching DSL
 
 Kotlin에서 구조적 분기와 타입 기반 조건을 더 선언적이고 직관적으로 다룰 수 있는 패턴 매칭 DSL입니다.
 표현력이 제한적인 when 문을 보완하고자 했으며, 현재 Kotlin 생태계에 마땅한 대안이 없어 직접 구현하게 되었습니다.
@@ -31,34 +31,32 @@ JavaScript의 `ts-pattern`이나 Python의 `match-case` 같은 패턴 매칭 DSL
 
 ## 🧱 Architecture Overview
 
-사용자 DSL 호출
-   │
-   ▼
- MatchBuilder               (사용자 정의 패턴 + 액션 수집)
-   │
-   ▼
- MatchContext              (패턴 목록 + 입력값 바인딩)
-   │
-   ▼
- PatternEvaluator          (재귀적 평가 로직)
-   │
-   ├── TypePattern
-   ├── ValuePattern
-   ├── DestructurePattern
-   └── PredicateCondition
-   │
-   ▼
- MatchResult               (Success / Failure / Bindings)
+사용자 DSL 호출  
+▼  
+**MatchBuilder** (사용자 정의 패턴 + 액션 수집)  
+▼  
+**MatchContext** (패턴 목록 + 입력값 바인딩)  
+▼  
+**PatternEvaluator** (재귀적 평가 로직)  
+├── TypePattern  
+├── ValuePattern  
+├── DestructurePattern  
+└── PredicateCondition  
+▼  
+**MatchResult** (Success / Failure / Bindings)
 
+---
+
+```mermaid
 graph TD
     User["👤 DSL 호출"]
     MB["🧱 MatchBuilder"]
-    CTX["🧩 MatchContext"]
+    CTX["🌿 MatchContext"]
     EVAL["⚙️ PatternEvaluator"]
     TP["🔤 TypePattern"]
     VP["🔢 ValuePattern"]
     DP["📦 DestructurePattern"]
-    PC["🧾 PredicateCondition"]
+    PC["📃 PredicateCondition"]
     MR["✅ MatchResult"]
 
     User --> MB --> CTX --> EVAL
