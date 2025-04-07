@@ -25,6 +25,17 @@ JavaScript의 `ts-pattern`이나 Python의 `match-case` 같은 패턴 매칭 DSL
 
 ---
 
+## Installation
+
+To use `Kt-pattern` in your project, add the following dependency to your `build.gradle`:
+
+```gradle
+dependencies {
+    implementation "com.ktpattern:kt-pattern:1.0.0"
+}
+
+---
+
 ## 🚀 Features
 
 - [ ] 타입 기반 매칭 (Type Matching)

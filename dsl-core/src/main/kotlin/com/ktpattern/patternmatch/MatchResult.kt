@@ -1,4 +1,4 @@
-package com.koodongha.patternmatch
+package com.ktpattern.patternmatch
 
 sealed class MatchResult {
     data class Success(val bindings: Map<String, Any?> = emptyMap()) : MatchResult()

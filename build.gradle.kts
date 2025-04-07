@@ -3,7 +3,7 @@ plugins {
 }
 
 allprojects {
-    group = "com.koodongha"
+    group = "com.ktpattern"
     version = "0.1.0"
 
     repositories {

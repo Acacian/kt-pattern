@@ -1,10 +1,12 @@
-package com.koodongha.patternmatch
+package com.ktpattern.patternmatch
 
-data class ValuePattern(
-    val expected: Any?
+import kotlin.reflect.KClass
+
+data class TypePattern<T : Any>(
+    val type: KClass<T>
 ) : Pattern {
     override fun match(value: Any?): MatchResult {
-        return if (value == expected) {
+        return if (type.isInstance(value)) {
             MatchResult.Success()
         } else {
             MatchResult.Failure

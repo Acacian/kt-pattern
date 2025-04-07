@@ -1,4 +1,4 @@
-package com.koodongha.patternmatch
+package com.ktpattern.patternmatch
 
 data class PredicateCondition(
     val predicate: (Any?) -> Boolean
