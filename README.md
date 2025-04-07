@@ -17,6 +17,14 @@ JavaScript의 `ts-pattern`이나 Python의 `match-case` 같은 패턴 매칭 DSL
 
 ---
 
+## 🛠 기술 스택
+
+- Kotlin 1.9.x
+- Gradle Kotlin DSL
+- JUnit5 (테스트)
+
+---
+
 ## 🚀 Features
 
 - [ ] 타입 기반 매칭 (Type Matching)
@@ -26,6 +34,32 @@ JavaScript의 `ts-pattern`이나 Python의 `match-case` 같은 패턴 매칭 DSL
 - [ ] 스마트 캐스트 연계 (Smart-cast awareness)
 - [ ] Sealed class 지원
 - [ ] 커스텀 패턴 정의
+
+---
+
+## 🧠 설계 철학 - 3단계 분리 구조
+
+1️⃣ 구조 분리  
+→ `dsl-core`, `dsl-runtime`, `dsl-dsl` 등 책임 단위로 나눈 멀티모듈 구성
+
+2️⃣ 실행 분리  
+→ `examples` 모듈에서 독립 실행 가능한 main() 진입점 구성
+
+3️⃣ 런타임 교체 가능  
+→ `PatternEvaluator`, `SnapshotBinder` 등 interface 기반 추상화로,  
+   다양한 evaluator를 주입하거나 교체할 수 있도록 설계됨
+
+---
+
+## 🧩 멀티모듈 구성
+
+| 모듈명        | 설명 |
+|---------------|------|
+| `dsl-core`     | 핵심 구조 및 패턴 정의 (`Pattern`, `MatchResult`, `PatternEvaluator`) |
+| `dsl-runtime`  | 평가 로직 구현 (`DefaultPatternEvaluator`, snapshot 등) |
+| `dsl-dsl`      | 사용자 DSL 호출부 (`match`, `case`, `MatchBuilder`) |
+| `dsl-test`     | 테스트 유틸 및 도구 (향후 확장 예정) |
+| `examples`     | DSL 사용 예시 및 main() 실행 환경 |
 
 ---
 
