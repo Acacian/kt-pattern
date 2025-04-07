@@ -1,5 +1,5 @@
 package com.ktpattern.patternmatch
 
-interface PatternEvaluator {
-    fun evaluate(pattern: Pattern, input: Any?): MatchResult
+interface PatternEvaluator<T> {
+    fun evaluate(pattern: Pattern<T>, input: T?): MatchResult
 }

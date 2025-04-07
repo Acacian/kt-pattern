@@ -1,5 +1,6 @@
 package com.ktpattern.patternmatch
 
-interface Pattern {
-    fun match(value: Any?): MatchResult
+interface Pattern<T> {
+    fun match(value: T): Boolean
+    fun getType(): Class<*> 
 }

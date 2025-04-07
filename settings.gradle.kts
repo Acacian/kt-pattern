@@ -15,6 +15,5 @@ include(
     "dsl-core",
     "dsl-runtime",
     "dsl-dsl",
-    "dsl-test",
-    "examples"
+    "dsl-test"
 )

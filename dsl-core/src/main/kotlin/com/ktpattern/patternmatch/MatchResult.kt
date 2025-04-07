@@ -1,9 +1,11 @@
 package com.ktpattern.patternmatch
 
-sealed class MatchResult {
-    data class Success(val bindings: Map<String, Any?> = emptyMap()) : MatchResult()
-    object Failure : MatchResult()
+data class Snapshot(val data: Any)
 
-    fun isSuccess() = this is Success
-    fun isFailure() = this is Failure
+sealed class MatchResult {
+    data class Success(val value: Any, val snapshot: Snapshot? = null) : MatchResult()
+    data class Failure(val reason: String, val value: Any? = null) : MatchResult()
+
+    // 성공 여부 확인
+    fun isSuccess(): Boolean = this is Success
 }

@@ -1,15 +1,13 @@
 package com.ktpattern.patternmatch
 
-import kotlin.reflect.KClass
+class TypePattern<T : Any>(
+    val type: Class<T>
+) : Pattern<Any> {
+    override fun match(value: Any): Boolean {
+        return type.isInstance(value) || type.isAssignableFrom(value::class.java)
+    }
 
-data class TypePattern<T : Any>(
-    val type: KClass<T>
-) : Pattern {
-    override fun match(value: Any?): MatchResult {
-        return if (type.isInstance(value)) {
-            MatchResult.Success()
-        } else {
-            MatchResult.Failure
-        }
+    override fun getType(): Class<*> {
+        return type
     }
 }

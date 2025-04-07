@@ -1,13 +1,14 @@
 package com.ktpattern.patternmatch
 
-data class ValuePattern(
-    val expected: Any?
-) : Pattern {
-    override fun match(value: Any?): MatchResult {
-        return if (value == expected) {
-            MatchResult.Success()
-        } else {
-            MatchResult.Failure
-        }
+class ValuePattern<T>(
+    val value: T,
+    val predicate: (T) -> Boolean = { true }
+) : Pattern<T> {
+    override fun match(value: T): Boolean {
+        return this.value == value && predicate(value)
+    }
+
+    override fun getType(): Class<*> {
+        return value::class.java
     }
 }

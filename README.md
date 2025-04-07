@@ -33,6 +33,7 @@ To use `Kt-pattern` in your project, add the following dependency to your `build
 dependencies {
     implementation "com.ktpattern:kt-pattern:1.0.0"
 }
+```
 
 ---
 
