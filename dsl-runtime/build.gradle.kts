@@ -3,5 +3,6 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":dsl-core"))
     testImplementation(kotlin("test"))
 }

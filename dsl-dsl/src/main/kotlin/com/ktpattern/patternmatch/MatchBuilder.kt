@@ -1,6 +1,6 @@
-package com.ktpattern.patternmatch.dsl
+package com.ktpattern.patternmatch
 
-import com.ktpattern.patternmatch.MatchResult
+import com.ktpattern.patternmatch.PatternMatchResult
 import com.ktpattern.patternmatch.Pattern
 import com.ktpattern.patternmatch.PatternEvaluator
 
@@ -20,7 +20,7 @@ class MatchBuilder<T, R>(
 
     fun evaluate(value: T): R? {
         for ((pattern, action) in cases) {
-            val result: MatchResult = evaluator.evaluate(pattern, value)
+            val result: PatternMatchResult = evaluator.evaluate(pattern, value)
             if (result.isSuccess()) {
                 return action()
             }
