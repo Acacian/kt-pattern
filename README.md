@@ -51,16 +51,16 @@ dependencies {
 
 ## 🚀 Features
 
-| 기능 | 구현 여부 | 결과 | 예제 |
-|------|------------|------|------|
-| **타입 기반 매칭 (Type Matching)** | ✅ | 정상 작동 | `whenType<String> { "It's a String: $it" }` |
-| **값 기반 매칭 (Value Matching)** | ✅ | 정상 작동 | `whenValue(123) { "Matched value: $it" }` |
-| **구조 분해 매칭 (Destructuring Matching)** | ✅ | 정상 작동 | `caseOf<Person> { "Person: ${it.name}" }` |
-| **조건부 매칭 (Predicate DSL)** | ✅ | 정상 작동 | `caseOf<Box<Int>>({ it.value > 10 }) { "Boxed: ${it.value}" }` |
-| **스마트 캐스트 연계 (Smart Cast)** | ✅ | 정상 작동 | `caseOf<Dog>({ it.age < 10 }) { "Young dog: ${it.name}" }` |
-| **Sealed class 지원** | ✅ | 정상 작동 | `whenType<Animal> { "Animal: $it" }` |
-| **커스텀 패턴 정의 (Custom Pattern)** | ✅ | 정상 작동 | `case(customPattern) { "Matched custom" }` |
-| **매칭된 값 DSL action에 전달** | ✅ | 리팩토링 성공 | `caseOf<Person> { person -> "Hi ${person.name}" }` |
+| 기능 | 예제 |
+|------|------|
+| **타입 기반 매칭 (Type Matching)** | `whenType<String> { "It's a String: $it" }` |
+| **값 기반 매칭 (Value Matching)** | `whenValue(123) { "Matched value: $it" }` |
+| **구조 분해 매칭 (Destructuring Matching)** | `caseOf<Person> { "Person: ${it.name}" }` |
+| **조건부 매칭 (Predicate DSL)** | `caseOf<Box<Int>>({ it.value > 10 }) { "Boxed: ${it.value}" }` |
+| **스마트 캐스트 연계 (Smart Cast)** | `caseOf<Dog>({ it.age < 10 }) { "Young dog: ${it.name}" }` |
+| **Sealed class 지원** | `whenType<Animal> { "Animal: $it" }` |
+| **커스텀 패턴 정의 (Custom Pattern)** | `case(customPattern) { "Matched custom" }` |
+| **매칭된 값 DSL action에 전달** | `caseOf<Person> { person -> "Hi ${person.name}" }` |
 
 ---
 
@@ -87,12 +87,13 @@ dependencies {
 
 ## 🧩 멀티모듈 구성
 
-| 모듈명        | 설명                                                                  |
-| ------------- | --------------------------------------------------------------------- |
+| 모듈명        | 설명                                                                 |
+| ------------- | -------------------------------------------------------------------- |
 | `dsl-core`    | 핵심 구조 및 패턴 정의 (`Pattern`, `MatchResult`, `PatternEvaluator`) |
-| `dsl-runtime` | 평가 로직 구현 (`DefaultPatternEvaluator`, snapshot 등)               |
-| `dsl-dsl`     | 사용자 DSL 호출부 (`match`, `case`, `MatchBuilder`)                   |
-| `dsl-test`    | 테스트 유틸 및 도구                                  |                         |
+| `dsl-runtime` | 평가 로직 구현 (`DefaultPatternEvaluator`, snapshot 등)              |
+| `dsl-dsl`     | 사용자 DSL 호출부 (`match`, `case`, `MatchBuilder`)                  |
+| `dsl-test`    | 테스트 유틸 및 도구                                                  |
+| `examples`    | DSL 사용 예시를 담은 실행 가능 데모 코드 (`main()`, 샘플 매칭 로직)   |
 
 ---
 
@@ -110,7 +111,7 @@ dependencies {
 ├── DestructurePattern  
 └── PredicateCondition  
 ▼  
-**MatchResult** (Success / Failure / Bindings)
+**PatternMatchResult** (Success / Failure / Bindings)
 
 ---
 
@@ -124,7 +125,7 @@ graph TD
     VP["🔢 ValuePattern"]
     DP["📦 DestructurePattern"]
     PC["📃 PredicateCondition"]
-    MR["✅ MatchResult"]
+    MR["✅ PatternMatchResult"]
 
     User --> MB --> CTX --> EVAL
     EVAL --> TP
