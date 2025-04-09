@@ -8,11 +8,12 @@ inline fun <reified T, R> match(
     value: T,
     block: MatchBuilder<T, R>.() -> Unit
 ): R? {
+    @Suppress("UNCHECKED_CAST")
     val evaluator = ServiceLoader.load(PatternEvaluator::class.java)
         .firstOrNull() as? PatternEvaluator<T>
         ?: error("No PatternEvaluator found via ServiceLoader")
 
-    val builder = MatchBuilder(evaluator)
+    val builder = MatchBuilder<T, R>(evaluator) 
     builder.block()
     return builder.evaluate(value)
 }

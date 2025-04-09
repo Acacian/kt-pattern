@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>kt-pattern</name>
-	<comment>Project kt-pattern created by Buildship.</comment>
+	<name>examples</name>
+	<comment>Project examples created by Buildship.</comment>
 	<projects>
 	</projects>
 	<buildSpec>
@@ -22,7 +22,7 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1744023224817</id>
+			<id>1744194959272</id>
 			<name></name>
 			<type>30</type>
 			<matcher>
