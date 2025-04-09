@@ -51,27 +51,37 @@ dependencies {
 
 ## 🚀 Features
 
-- [ ] 타입 기반 매칭 (Type Matching)
-- [ ] 값 기반 매칭 (Value Matching)
-- [ ] 구조 분해 기반 매칭 (Destructuring Matching)
-- [ ] 조건부 매칭 (`when` + predicate DSL)
-- [ ] 스마트 캐스트 연계 (Smart-cast awareness)
-- [ ] Sealed class 지원
-- [ ] 커스텀 패턴 정의
+| 기능 | 구현 여부 | 결과 | 예제 |
+|------|------------|------|------|
+| **타입 기반 매칭 (Type Matching)** | ✅ | 정상 작동 | `whenType<String> { "It's a String: $it" }` |
+| **값 기반 매칭 (Value Matching)** | ✅ | 정상 작동 | `whenValue(123) { "Matched value: $it" }` |
+| **구조 분해 매칭 (Destructuring Matching)** | ✅ | 정상 작동 | `caseOf<Person> { "Person: ${it.name}" }` |
+| **조건부 매칭 (Predicate DSL)** | ✅ | 정상 작동 | `caseOf<Box<Int>>({ it.value > 10 }) { "Boxed: ${it.value}" }` |
+| **스마트 캐스트 연계 (Smart Cast)** | ✅ | 정상 작동 | `caseOf<Dog>({ it.age < 10 }) { "Young dog: ${it.name}" }` |
+| **Sealed class 지원** | ✅ | 정상 작동 | `whenType<Animal> { "Animal: $it" }` |
+| **커스텀 패턴 정의 (Custom Pattern)** | ✅ | 정상 작동 | `case(customPattern) { "Matched custom" }` |
+| **매칭된 값 DSL action에 전달** | ✅ | 리팩토링 성공 | `caseOf<Person> { person -> "Hi ${person.name}" }` |
 
 ---
 
-## 🧠 설계 철학 - 3단계 분리 구조
+## 🧠 모듈 설계 목표 및 구성
 
-1️⃣ 구조 분리  
-→ `dsl-core`, `dsl-runtime`, `dsl-dsl` 등 책임 단위로 나눈 멀티모듈 구성
+본 프로젝트는 선언형 패턴 매칭 DSL의 확장성과 재사용성을 높이기 위해  
+아래와 같은 3단계 설계 원칙을 기반으로 멀티모듈 아키텍처를 구성합니다.
 
-2️⃣ 실행 분리  
-→ 실행 로직은 `dsl-dsl` 모듈에서 DSL 진입점 역할을 수행하며, 사용자 정의 패턴을 통해 직접 실행 가능
+### 1. 구조 분리 (Implementation 분리)  
+- 책임 단위(core, runtime, dsl 등)로 모듈을 나누고  
+  의존성 방향을 명확히 설정합니다.  
+  (예: `dsl-dsl` → `dsl-runtime` → `dsl-core`)
 
-3️⃣ 런타임 교체 가능  
-→ `PatternEvaluator`, `SnapshotBinder` 등 interface 기반 추상화로,  
- 다양한 evaluator를 주입하거나 교체할 수 있도록 설계됨
+### 2. 실행 분리 (Runtime 분리)  
+- 실행 환경(web, batch 등)을 독립 모듈로 구성하여  
+  실행 단위를 분리합니다. 각 모듈은 자체 `main()` 진입점을 가질 수 있습니다.
+
+### 3. import 최소화 및 내부 캡슐화  
+- 동일한 패키지 구조를 유지하고, `internal` 등을 활용해  
+  모듈 간 불필요한 노출을 최소화합니다.  
+  이를 통해 런타임 시점에서 구현체만 교체하는 구조를 지향합니다.
 
 ---
 
@@ -82,7 +92,7 @@ dependencies {
 | `dsl-core`    | 핵심 구조 및 패턴 정의 (`Pattern`, `MatchResult`, `PatternEvaluator`) |
 | `dsl-runtime` | 평가 로직 구현 (`DefaultPatternEvaluator`, snapshot 등)               |
 | `dsl-dsl`     | 사용자 DSL 호출부 (`match`, `case`, `MatchBuilder`)                   |
-| `dsl-test`    | 테스트 유틸 및 도구 (향후 확장 예정)                                  |
+| `dsl-test`    | 테스트 유틸 및 도구                                  |                         |
 
 ---
 
