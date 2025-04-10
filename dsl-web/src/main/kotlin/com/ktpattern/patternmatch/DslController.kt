@@ -8,11 +8,7 @@ class DslController(
 
     @PostMapping("/match")
     fun evaluate(@RequestBody request: MatchRequest): ResponseEntity<String> {
-        val customPattern = object : Pattern<Any> {
-            override fun match(value: Any): Boolean =
-                value is String && value.startsWith("he")
-            override fun getType(): Class<*> = String::class.java
-        }
+        val patterns = request.patterns ?: listOf()
         
         val result = dslService.evaluate(request.input)
         return ResponseEntity.ok(result)
