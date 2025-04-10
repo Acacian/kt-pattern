@@ -1,0 +1,16 @@
+server:
+  port: 7165
+
+spring:
+  application:
+    name: dsl-web
+
+logging:
+  level:
+    root: INFO
+    com.ktpattern: DEBUG
+
+spring:
+  jackson:
+    serialization:
+      indent_output: true
