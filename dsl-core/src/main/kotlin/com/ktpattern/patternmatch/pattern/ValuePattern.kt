@@ -6,11 +6,10 @@ class ValuePattern<T>(
     val predicate: (T) -> Boolean = { true }
 ) : Pattern<T> {
 
-    override fun match(value: T): Boolean {
-        return this.value == value && predicate(value)
+    @Suppress("UNCHECKED_CAST")
+    override fun match(value: Any): Boolean {
+        return (value == this.value) && predicate(value as T)
     }
 
-    override fun getType(): Class<*> {
-        return type
-    }
+    override fun getType(): Class<*> = type
 }

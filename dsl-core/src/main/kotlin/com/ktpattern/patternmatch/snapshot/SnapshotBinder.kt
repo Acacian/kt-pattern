@@ -10,4 +10,8 @@ class SnapshotBinder<T> {
     fun getSnapshot(identifier: String): Snapshot? {
         return snapshots[identifier]
     }
+
+    fun getAll(): Map<String, Snapshot> {
+        return snapshots
+    }
 }

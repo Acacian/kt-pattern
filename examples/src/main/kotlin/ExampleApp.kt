@@ -1,4 +1,8 @@
-import com.ktpattern.patternmatch.*
+package com.ktpattern.patternmatch
+
+import com.ktpattern.patternmatch.whenType
+import com.ktpattern.patternmatch.whenValue
+import com.ktpattern.patternmatch.caseOf
 
 sealed class Animal
 data class Dog(val name: String, val age: Int) : Animal()
@@ -9,6 +13,8 @@ data class Person(val name: String, val age: Int)
 data class Box<T>(val value: T)
 
 fun main() {
+    val binder = SnapshotBinder<Any>()
+
     val inputs = listOf<Any>(
         "hello",
         123,
@@ -19,36 +25,38 @@ fun main() {
     )
 
     for (input in inputs) {
-        val result = match<Any, String>(input) {
-            // ✅ 타입 기반 매칭
-            whenType<String, Any, String> { "It's a String: $input" }
+        val result = match<Any, String>(input, snapshotBinder = binder) {
+            // ✅ 제네릭 명시 (TSub, T, R)
+            whenType<String, Any, String> { "It's a String: $it" }
 
-            // ✅ 값 기반 매칭
-            whenValue(123) { "Matched exact value: 123" }
+            whenValue<Int, Any, String>(123) { "Matched exact value: 123" }
 
-            // ✅ 구조 분해 매칭 (Destructuring)
             caseOf<Person, Any, String>({ it.age > 18 }) { "Adult person: ${it.name}" }
 
-            // ✅ 조건부 매칭 (`caseOf` + predicate)
             caseOf<Box<Int>, Any, String>({ it.value > 10 }) { "Boxed int > 10: ${it.value}" }
 
-            // ✅ 스마트 캐스트 연계
             caseOf<Dog, Any, String>({ it.age < 10 }) { "Young dog: ${it.name}" }
 
-            // ✅ Sealed class 매칭
-            whenType<Animal, Any, String> { "Some kind of animal: $input" }
+            whenType<Animal, Any, String> { "Some kind of animal: $it" }
 
-            // ✅ 커스텀 패턴 정의
+            // ✅ 커스텀 패턴
             val custom = object : Pattern<Any> {
                 override fun match(value: Any): Boolean =
                     value is String && value.startsWith("he")
+
                 override fun getType(): Class<*> = String::class.java
             }
-            case(custom) { "Custom pattern matched: $input" }
+            case<Any>(custom) { value -> "Custom pattern matched: $value" }
 
             else_ { "No match for: $input" }
         }
 
         println("Input: $input → Result: $result")
+    }
+
+    println("\n🧾 Snapshot Log")
+    println("------------------------")
+    binder.getAll().forEach { (id, snap) ->
+        println("[$id] → ${snap.status}, value=${snap.value}, time=${snap.timestamp}")
     }
 }
