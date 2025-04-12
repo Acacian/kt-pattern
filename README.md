@@ -119,6 +119,7 @@ dependencies {
 ├── DestructurePattern  
 ├── PredicateCondition  
 └── (선택적) Snapshot 기록
+
 ▼  
 **PatternMatchResult** (Success / Failure / Bindings)
 
