@@ -1,19 +1,14 @@
 package com.ktpattern.patternmatch
 
-import com.ktpattern.patternmatch.whenType
-import com.ktpattern.patternmatch.whenValue
-import com.ktpattern.patternmatch.caseOf
-
 sealed class Animal
 data class Dog(val name: String, val age: Int) : Animal()
 data class Cat(val name: String) : Animal()
-object UnknownAnimal : Animal()
 
 data class Person(val name: String, val age: Int)
 data class Box<T>(val value: T)
 
 fun main() {
-    val binder = SnapshotBinder<Any>()
+    val binder = SnapshotBinder()
 
     val inputs = listOf<Any>(
         "hello",

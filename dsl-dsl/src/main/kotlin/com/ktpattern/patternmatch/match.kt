@@ -4,7 +4,7 @@ import java.util.ServiceLoader
 
 inline fun <reified T, R> match(
     value: T,
-    snapshotBinder: SnapshotBinder<in T>? = null,
+    snapshotBinder: SnapshotBinder? = null,
     block: MatchBuilder<T, R>.() -> Unit
 ): R? {
     val rawEvaluator = ServiceLoader.load(PatternEvaluator::class.java)

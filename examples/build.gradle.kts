@@ -4,7 +4,7 @@ plugins {
 }
 
 application {
-    mainClass.set("ExampleAppKt")
+    mainClass.set("com.ktpattern.patternmatch.ExampleAppKt")
 }
 
 dependencies {

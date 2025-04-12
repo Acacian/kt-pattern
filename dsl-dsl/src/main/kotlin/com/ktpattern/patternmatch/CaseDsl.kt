@@ -1,8 +1,5 @@
 package com.ktpattern.patternmatch
 
-import com.ktpattern.patternmatch.TypePattern
-import com.ktpattern.patternmatch.ValuePattern
-
 // 🔧 타입 기반 매칭
 inline fun <reified TSub : T, T : Any, R> MatchBuilder<T, R>.whenType(
     noinline action: (TSub) -> R
@@ -29,7 +26,7 @@ inline fun <reified TSub : T, T : Any, R> MatchBuilder<T, R>.caseOf(
 ) {
     val typedPattern = TypePattern(TSub::class.java) { value ->
         @Suppress("UNCHECKED_CAST")
-        predicate(value as TSub)
+        predicate(value)
     }
     @Suppress("UNCHECKED_CAST")
     case(typedPattern as Pattern<T>) { value -> action(value as TSub) }

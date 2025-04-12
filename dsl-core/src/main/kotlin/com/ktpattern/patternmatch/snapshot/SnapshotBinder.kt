@@ -1,14 +1,10 @@
 package com.ktpattern.patternmatch
 
-class SnapshotBinder<T> {
+class SnapshotBinder {
     private val snapshots = mutableMapOf<String, Snapshot>()
 
     fun saveSnapshot(identifier: String, snapshot: Snapshot) {
         snapshots[identifier] = snapshot
-    }
-
-    fun getSnapshot(identifier: String): Snapshot? {
-        return snapshots[identifier]
     }
 
     fun getAll(): Map<String, Snapshot> {

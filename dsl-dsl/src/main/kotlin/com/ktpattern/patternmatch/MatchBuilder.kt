@@ -2,7 +2,7 @@ package com.ktpattern.patternmatch
 
 class MatchBuilder<T, R>(
     private val evaluator: PatternEvaluator<T>,
-    private val snapshotBinder: SnapshotBinder<in T>? = null
+    private val snapshotBinder: SnapshotBinder? = null
 ) {
     private val cases = mutableListOf<Pair<Pattern<T>, (T) -> R>>()
     private var elseCase: (() -> R)? = null
@@ -20,19 +20,34 @@ class MatchBuilder<T, R>(
         for ((pattern, action) in cases) {
             val result = evaluator.evaluate(pattern, value)
 
+            val status = if (result.isSuccess()) SnapshotStatus.Matched else SnapshotStatus.NotMatched
+
             snapshotBinder?.saveSnapshot(
-                pattern.toString(),
-                Snapshot(
+                identifier = "pattern:${pattern::class.simpleName}-${pattern.hashCode()}",
+                snapshot = Snapshot(
                     value = value as Any,
                     pattern = pattern.toString(),
-                    status = if (result.isSuccess()) SnapshotStatus.Matched else SnapshotStatus.NotMatched
+                    status = status
                 )
             )
 
             if (result is PatternMatchResult.Success) {
+                @Suppress("UNCHECKED_CAST")
                 return action(result.value as T)
             }
         }
+
+        if (elseCase != null) {
+            snapshotBinder?.saveSnapshot(
+                identifier = "else-${value.hashCode()}",
+                snapshot = Snapshot(
+                    value = value as Any,
+                    pattern = "else",
+                    status = SnapshotStatus.NotMatched
+                )
+            )
+        }
+
         return elseCase?.invoke()
     }
 }
