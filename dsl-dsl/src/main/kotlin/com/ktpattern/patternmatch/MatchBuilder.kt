@@ -1,9 +1,5 @@
 package com.ktpattern.patternmatch
 
-// import com.ktpattern.patternmatch.PatternMatchResult
-// import com.ktpattern.patternmatch.Pattern
-// import com.ktpattern.patternmatch.PatternEvaluator
-
 class MatchBuilder<T, R>(
     private val evaluator: PatternEvaluator<T>
 ) {
