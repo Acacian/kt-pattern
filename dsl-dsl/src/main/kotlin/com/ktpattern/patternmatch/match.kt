@@ -7,16 +7,13 @@ inline fun <reified T, R> match(
     snapshotBinder: SnapshotBinder? = null,
     block: MatchBuilder<T, R>.() -> Unit
 ): R? {
-    val rawEvaluator = ServiceLoader.load(PatternEvaluator::class.java)
-        .firstOrNull() as? PatternEvaluator<Any>
-        ?: error("No PatternEvaluator found via ServiceLoader")
+    val evaluators = ServiceLoader.load(PatternEvaluator::class.java).toList()
 
-    @Suppress("UNCHECKED_CAST")
-    val evaluator = rawEvaluator as PatternEvaluator<T>
+    val builder: MatchBuilder<T, R> = MatchBuilder(
+        CompositeEvaluator(evaluators),
+        snapshotBinder
+    )
 
-    val builder: MatchBuilder<T, R> = MatchBuilder(evaluator, snapshotBinder)
     builder.block()
-
-    val result: R? = builder.evaluate(value)
-    return result
+    return builder.evaluate(value)
 }
