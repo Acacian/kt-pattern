@@ -51,7 +51,7 @@ fun main() {
 
     println("\n🧾 Snapshot Log")
     println("------------------------")
-    binder.getAll().forEach { (id, snap) ->
-        println("[$id] → ${snap.status}, value=${snap.value}, time=${snap.timestamp}")
+    binder.getAll().forEachIndexed { index, snap ->
+        println("[$index] ${snap.status} | ${snap.value} | ${snap.timestamp}")
     }
 }
