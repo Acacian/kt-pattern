@@ -4,25 +4,29 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-// RegexPattern
+// ----------------------
+// 패턴 및 evaluator 정의
+// ----------------------
+
 private class RegexPattern(private val regex: Regex) : Pattern<Any> {
     override fun match(value: Any) = value is String && regex.matches(value)
     override fun getType(): Class<*> = RegexPattern::class.java
+}
+
+private class CustomPattern : Pattern<Any> {
+    override fun match(value: Any) = value is String && value.startsWith("hey")
+    override fun getType(): Class<*> = CustomPattern::class.java
 }
 
 private class RegexPatternEvaluator : PatternEvaluator<Any> {
     override fun supports(pattern: Pattern<*>) = pattern is RegexPattern
     override fun evaluate(pattern: Pattern<Any>, value: Any): PatternMatchResult {
         val regex = pattern as RegexPattern
-        return if (regex.match(value)) PatternMatchResult.Success(value)
+        val result = regex.match(value)
+        println("🔍 Regex evaluate: $value → $result")
+        return if (result) PatternMatchResult.Success(value)
         else PatternMatchResult.Failure("Regex mismatch")
     }
-}
-
-// CustomPattern
-private class CustomPattern : Pattern<Any> {
-    override fun match(value: Any) = value is String && value.startsWith("hey")
-    override fun getType(): Class<*> = CustomPattern::class.java
 }
 
 private class CustomPatternEvaluator : PatternEvaluator<Any> {
@@ -34,8 +38,13 @@ private class CustomPatternEvaluator : PatternEvaluator<Any> {
     }
 }
 
+// ----------------------
+// 테스트 클래스
+// ----------------------
+
 class FullDslIntegrationTest {
 
+    // 도메인 모델
     sealed class Animal
     data class Dog(val name: String, val age: Int) : Animal()
     data class Cat(val name: String) : Animal()
@@ -46,12 +55,10 @@ class FullDslIntegrationTest {
     private val customPattern = CustomPattern()
 
     private fun buildEvaluator(): CompositeEvaluator<Any> {
-        return CompositeEvaluator(
-            listOf(
-                RegexPatternEvaluator(),
-                CustomPatternEvaluator()
-            )
-        )
+        return CompositeEvaluator(listOf(
+            RegexPatternEvaluator(),
+            CustomPatternEvaluator()
+        ))
     }
 
     @Test
@@ -99,7 +106,7 @@ class FullDslIntegrationTest {
         builder.evaluate("hey!")
         builder.evaluate("xyz")
 
-        val logs = binder.getAll().values
+        val logs = binder.getAll()
         logs.forEach { println("→ ${it.status} | ${it.value} | ${it.pattern}") }
 
         val matched = logs.count { it.status is SnapshotStatus.Matched }
