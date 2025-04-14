@@ -23,8 +23,7 @@ class MatchBuilder<T, R>(
             val status = if (result.isSuccess()) SnapshotStatus.Matched else SnapshotStatus.NotMatched
 
             snapshotBinder?.saveSnapshot(
-                identifier = "pattern:${pattern::class.simpleName}-${pattern.hashCode()}",
-                snapshot = Snapshot(
+                Snapshot(
                     value = value as Any,
                     pattern = pattern.toString(),
                     status = status
@@ -38,8 +37,7 @@ class MatchBuilder<T, R>(
 
         if (elseCase != null) {
             snapshotBinder?.saveSnapshot(
-                identifier = "else-${value.hashCode()}",
-                snapshot = Snapshot(
+                Snapshot(
                     value = value as Any,
                     pattern = "else",
                     status = SnapshotStatus.NotMatched
