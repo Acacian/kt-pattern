@@ -5,11 +5,14 @@ class PredicateCondition<T>(
     val predicate: (T) -> Boolean
 ) : Pattern<T> {
 
-    override fun match(value: T): Boolean {
-        return predicate(value)
+    @Suppress("UNCHECKED_CAST")
+    override fun match(value: Any): Boolean {
+        return if (type.isInstance(value)) {
+            predicate(value as T)
+        } else {
+            false
+        }
     }
 
-    override fun getType(): Class<*> {
-        return type
-    }
+    override fun getType(): Class<*> = type
 }

@@ -1,19 +1,22 @@
 package com.ktpattern.patternmatch
 
-import com.ktpattern.patternmatch.Pattern
-import com.ktpattern.patternmatch.PatternEvaluator
 import java.util.ServiceLoader
 
 inline fun <reified T, R> match(
     value: T,
+    snapshotBinder: SnapshotBinder? = null,
     block: MatchBuilder<T, R>.() -> Unit
 ): R? {
-    @Suppress("UNCHECKED_CAST")
-    val evaluator = ServiceLoader.load(PatternEvaluator::class.java)
-        .firstOrNull() as? PatternEvaluator<T>
+    val rawEvaluator = ServiceLoader.load(PatternEvaluator::class.java)
+        .firstOrNull() as? PatternEvaluator<Any>
         ?: error("No PatternEvaluator found via ServiceLoader")
 
-    val builder = MatchBuilder<T, R>(evaluator) 
+    @Suppress("UNCHECKED_CAST")
+    val evaluator = rawEvaluator as PatternEvaluator<T>
+
+    val builder: MatchBuilder<T, R> = MatchBuilder(evaluator, snapshotBinder)
     builder.block()
-    return builder.evaluate(value)
+
+    val result: R? = builder.evaluate(value)
+    return result
 }

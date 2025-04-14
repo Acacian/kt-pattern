@@ -5,8 +5,10 @@ class TypePattern<T : Any>(
     val predicate: ((T) -> Boolean)? = null
 ) : Pattern<T> {
 
-    override fun match(value: T): Boolean {
-        return predicate?.invoke(value) ?: true
+    @Suppress("UNCHECKED_CAST")
+    override fun match(value: Any): Boolean {
+        if (!targetType.isInstance(value)) return false
+        return predicate?.invoke(value as T) ?: true
     }
 
     override fun getType(): Class<*> = targetType
