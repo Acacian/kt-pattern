@@ -1,6 +1,13 @@
 package com.ktpattern.patternmatch
 
 internal class DefaultPatternEvaluator : PatternEvaluator<Any> {
+    override fun supports(pattern: Pattern<*>): Boolean {
+        return pattern is TypePattern<*> ||
+                pattern is ValuePattern<*> ||
+                pattern is DestructurePattern<*> ||
+                pattern is PredicateCondition<*>
+    }
+
     @Suppress("UNCHECKED_CAST")
     override fun evaluate(pattern: Pattern<Any>, value: Any): PatternMatchResult {
         return when (pattern) {
