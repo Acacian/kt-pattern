@@ -5,14 +5,14 @@ class MatchBuilder<T, R>(
     private val snapshotBinder: SnapshotBinder? = null
 ) {
     private val cases = mutableListOf<Pair<Pattern<T>, (T) -> R>>()
-    private var elseCase: (() -> R)? = null
+    private var elseCase: ((T) -> R)? = null
 
     @Suppress("UNCHECKED_CAST")
     fun <SubT : T> case(pattern: Pattern<SubT>, action: (SubT) -> R) {
         cases.add(pattern as Pattern<T> to { value -> action(value as SubT) })
     }
 
-    fun else_(action: () -> R) {
+    fun else_(action: (T) -> R) {
         elseCase = action
     }
 
@@ -32,7 +32,6 @@ class MatchBuilder<T, R>(
             )
 
             if (result is PatternMatchResult.Success) {
-                @Suppress("UNCHECKED_CAST")
                 return action(result.value as T)
             }
         }
@@ -46,8 +45,9 @@ class MatchBuilder<T, R>(
                     status = SnapshotStatus.NotMatched
                 )
             )
+            return elseCase?.invoke(value)
         }
 
-        return elseCase?.invoke()
+        return null
     }
 }
