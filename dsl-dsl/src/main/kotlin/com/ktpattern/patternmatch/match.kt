@@ -3,7 +3,7 @@ package com.ktpattern.patternmatch
 import java.util.ServiceLoader
 
 @Suppress("UNCHECKED_CAST")
-inline fun <reified T, R> match(
+fun <T, R> match(
     value: T,
     snapshotBinder: SnapshotBinder? = null,
     block: MatchBuilder<T, R>.() -> Unit
