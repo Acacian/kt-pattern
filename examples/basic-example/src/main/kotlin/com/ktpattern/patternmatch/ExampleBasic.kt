@@ -49,8 +49,6 @@ fun main() {
         println("Input: $input → Result: $result")
     }
 
-    println("\n🧾 Snapshot Log")
-    println("------------------------")
     binder.getAll().forEachIndexed { index, snap ->
         println("[$index] ${snap.status} | ${snap.value} | ${snap.timestamp}")
     }
