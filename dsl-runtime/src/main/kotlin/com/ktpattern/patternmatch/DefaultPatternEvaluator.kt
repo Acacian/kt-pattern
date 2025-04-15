@@ -1,20 +1,23 @@
 package com.ktpattern.patternmatch
 
-internal class DefaultPatternEvaluator : PatternEvaluator<Any> {
+class DefaultPatternEvaluator : PatternEvaluator<Any> {
     override fun supports(pattern: Pattern<*>): Boolean {
         return pattern is TypePattern<*> ||
                 pattern is ValuePattern<*> ||
                 pattern is DestructurePattern<*> ||
-                pattern is PredicateCondition<*>
+                pattern is PredicateCondition<*> ||
+                pattern is AndPattern<*> ||
+                pattern is OrPattern<*>
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun evaluate(pattern: Pattern<Any>, value: Any): PatternMatchResult {
         return when (pattern) {
             is TypePattern<*> -> evaluateType(pattern as TypePattern<Any>, value)
             is ValuePattern<*> -> evaluateValue(pattern as ValuePattern<Any>, value)
             is DestructurePattern<*> -> evaluateDestructure(pattern as DestructurePattern<Any>, value)
             is PredicateCondition<*> -> evaluatePredicate(pattern as PredicateCondition<Any>, value)
+            is AndPattern<*> -> evaluateAnd(pattern as AndPattern<Any>, value)
+            is OrPattern<*> -> evaluateOr(pattern as OrPattern<Any>, value)
             else -> PatternMatchResult.Failure("Unknown pattern type")
         }
     }
@@ -48,6 +51,22 @@ internal class DefaultPatternEvaluator : PatternEvaluator<Any> {
             PatternMatchResult.Success(value)
         } else {
             PatternMatchResult.Failure("Predicate condition failed")
+        }
+    }
+
+    private fun evaluateAnd(pattern: AndPattern<Any>, value: Any): PatternMatchResult {
+        return if (pattern.patterns.all { evaluate(it, value) is PatternMatchResult.Success }) {
+            PatternMatchResult.Success(value)
+        } else {
+            PatternMatchResult.Failure("And pattern failed")
+        }
+    }
+
+    private fun evaluateOr(pattern: OrPattern<Any>, value: Any): PatternMatchResult {
+        return if (pattern.patterns.any { evaluate(it, value) is PatternMatchResult.Success }) {
+            PatternMatchResult.Success(value)
+        } else {
+            PatternMatchResult.Failure("Or pattern failed")
         }
     }
 }

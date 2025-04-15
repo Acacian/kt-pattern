@@ -1,6 +1,6 @@
 package com.ktpattern.patternmatch
 
-class AndPattern<T>(private val patterns: List<Pattern<T>>) : Pattern<T> {
+class AndPattern<T>(val patterns: List<Pattern<T>>) : Pattern<T> {
     override fun match(value: Any): Boolean =
         patterns.all { it.match(value) }
 
@@ -8,7 +8,7 @@ class AndPattern<T>(private val patterns: List<Pattern<T>>) : Pattern<T> {
         patterns.firstOrNull()?.getType() ?: Any::class.java
 }
 
-class OrPattern<T>(private val patterns: List<Pattern<T>>) : Pattern<T> {
+class OrPattern<T>(val patterns: List<Pattern<T>>) : Pattern<T> {
     override fun match(value: Any): Boolean =
         patterns.any { it.match(value) }
 
