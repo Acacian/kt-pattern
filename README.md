@@ -193,26 +193,6 @@ dependencies {
 ---
 
 ## 🧱 Architecture Overview
-
-사용자 DSL 호출  
-▼  
-**MatchBuilder** (패턴 + 액션 수집)  
-▼  
-**MatchContext** (입력값 + 패턴 목록 바인딩)  
-▼  
-**CompositeEvaluator** (순차적으로 evaluator 위임)  
-├── DefaultPatternEvaluator  
-│   ├── TypePattern  
-│   ├── ValuePattern  
-│   ├── DestructurePattern  
-│   ├── PredicateCondition  
-│   ├── AndPattern / OrPattern  
-├── CustomEvaluator (선택적)  
-└── SnapshotBinder (선택적 평가 기록)  
-▼  
-**PatternMatchResult** (Success / Failure / Bindings)
----
-
 ```mermaid
 graph TD
     User["👤 DSL 호출"]
