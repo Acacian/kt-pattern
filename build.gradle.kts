@@ -23,4 +23,21 @@ subprojects {
     tasks.test {
         useJUnitPlatform()
     }
+
+    if (name in listOf("dsl-core", "dsl-runtime", "dsl-dsl")) {
+        apply(plugin = "maven-publish")
+
+        afterEvaluate {
+            publishing {
+                publications {
+                    create<MavenPublication>("mavenJava") {
+                        from(components["java"])
+                        groupId = project.group.toString()
+                        artifactId = project.name
+                        version = project.version.toString()
+                    }
+                }
+            }
+        }
+    }
 }
