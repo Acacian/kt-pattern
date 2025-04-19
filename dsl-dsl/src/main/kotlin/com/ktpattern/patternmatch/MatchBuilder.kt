@@ -1,22 +1,22 @@
 package com.ktpattern.patternmatch
 
-class MatchBuilder<T, R>(
-    private val evaluator: PatternEvaluator<T>,
+class MatchBuilder(
+    private val evaluator: Evaluator<Any>,
     private val snapshotBinder: SnapshotBinder? = null
 ) {
-    private val cases = mutableListOf<Pair<Pattern<T>, (T) -> R>>()
-    private var elseCase: ((T) -> R)? = null
+    private val cases = mutableListOf<Pair<Pattern<Any>, (Any) -> String>>()
+    private var elseCase: ((Any) -> String)? = null
 
     @Suppress("UNCHECKED_CAST")
-    fun <SubT : T> case(pattern: Pattern<SubT>, action: (SubT) -> R) {
-        cases.add(pattern as Pattern<T> to { value -> action(value as SubT) })
+    fun <SubT : Any> case(pattern: Pattern<SubT>, action: (SubT) -> String) {
+        cases.add(pattern as Pattern<Any> to { value -> action(value as SubT) })
     }
 
-    fun else_(action: (T) -> R) {
+    fun else_(action: (Any) -> String) {
         elseCase = action
     }
 
-    fun evaluate(value: T): R? {
+    fun evaluate(value: Any): String? {
         for ((pattern, action) in cases) {
             val result = evaluator.evaluate(pattern, value)
 
@@ -24,26 +24,27 @@ class MatchBuilder<T, R>(
 
             snapshotBinder?.saveSnapshot(
                 Snapshot(
-                    value = value as Any,
+                    value = value,
                     pattern = pattern.toString(),
                     status = status
                 )
             )
 
             if (result is PatternMatchResult.Success) {
-                return action(result.value as T)
+                return action(result.value)
             }
         }
 
-        if (elseCase != null) {
+        // else case fallback
+        elseCase?.let {
             snapshotBinder?.saveSnapshot(
                 Snapshot(
-                    value = value as Any,
+                    value = value,
                     pattern = "else",
                     status = SnapshotStatus.NotMatched
                 )
             )
-            return elseCase?.invoke(value)
+            return it(value)
         }
 
         return null

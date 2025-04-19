@@ -3,7 +3,6 @@ package com.ktpattern.patternmatch
 sealed class SnapshotStatus {
     object Matched : SnapshotStatus()
     object NotMatched : SnapshotStatus()
-    object Error : SnapshotStatus()
 }
 
 data class Snapshot(

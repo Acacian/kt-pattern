@@ -15,22 +15,88 @@ Kotlin은 강력한 타입 시스템을 갖고 있지만,
 
 ## 🚀 Features
 
-| 기능 | 예제 |
-|------|------|
-| **타입 기반 매칭 (Type Matching)** | `whenType<String> { "It's a String: $it" }` |
-| **값 기반 매칭 (Value Matching)** | `whenValue(123) { "Matched value: $it" }` |
-| **조건부 매칭 (Predicate DSL)** | `caseOf<Box<Int>>({ it.value > 10 }) { "Boxed: ${it.value}" }` |
-| **구조 분해 매칭 (Destructuring Matching)** | `DestructurePattern(Box::class.java) { (v): Box<*> -> v == 42 }` |
-| **스마트 캐스트 연계 (Smart Cast)** | `caseOf<Dog>({ it.age < 10 }) { "Young dog: ${it.name}" }` |
-| **Sealed class 지원** | `whenType<Animal> { "Animal: $it" }` |
-| **커스텀 패턴 정의 (Custom Pattern + Evaluator)** | `case(CustomPattern()) { ... }`<br/>+ `CompositeEvaluator(listOf(DefaultPatternEvaluator(), CustomPatternEvaluator()))` |
-| **Evaluator 체이닝 처리 (CompositeEvaluator)** | `CompositeEvaluator(listOf(...))`로 순차 위임 평가 |
-| **매칭된 값 DSL action에 전달** | `caseOf<Person> { person -> "Hi ${person.name}" }` |
-| **매칭 과정 스냅샷 기록 (Snapshot Logging)** | `match(value, snapshotBinder = binder) { ... }`<br/>→ `binder.getAll()`로 결과 확인 가능 |
+### 1. 🎯 타입 기반 매칭 (whenType)
+```kotlin
+val result = match("hello") {
+    whenType<String> { "문자열입니다: $it" }
+    else_ { "다른 타입입니다" }
+}
+```
 
----
+### 2. 🧱 값 기반 매칭 (whenValue)
+```kotlin
+val result = match(123) {
+whenValue(123) { "정확히 123입니다!" }
+else_ { "다른 값입니다" }
+}
+```
 
-## 🔎 Snapshot Logging
+### 3. 🧠 조건부 매칭 (caseOf)
+```kotlin
+val result = match(Box(42)) {
+    caseOf<Box<Int>>({ it.value > 10 }) {
+        "Box에 담긴 값이 10보다 큽니다: ${it.value}"
+    }
+    else_ { "조건 불일치" }
+}
+```
+
+### 4. 🧩 구조 분해 매칭 (DestructurePattern)
+```kotlin
+val result = match(Box(42)) {
+    case(DestructurePattern(Box::class.java) { (v): Box<*> -> v == 42 }) {
+        "Box 안 값이 42입니다"
+    }
+    else_ { "구조 분해 실패" }
+}
+```
+
+### 5. ✨ 조건 + 타입 기반 매칭 (Smart Cast)
+```kotlin
+val result = match(Dog("뽀삐", 3)) {
+    caseOf<Dog>({ it.age < 10 }) {
+        "어린 강아지입니다: ${it.name}"
+    }
+    else_ { "조건 불일치" }
+}
+```
+
+### 6. 🐾 Sealed Class 매칭
+```kotlin
+sealed class Animal
+data class Dog(val name: String) : Animal()
+
+val result = match(Dog("바둑이")) {
+    whenType<Dog> { "강아지입니다: ${it.name}" }
+    else_ { "모르겠음" }
+}
+```
+
+### 7. 🛠 커스텀 패턴 정의 및 사용
+
+복잡한 도메인 로직도 간단한 클래스로 **Pattern을 커스터마이징**할 수 있습니다.
+예를 들면, Dart언어의 IsEven과 같은 조건을 구현할 수 있습니다.
+
+```kotlin
+class IsEven : SimplePattern<Int>(Int::class.java) {
+    override fun matches(value: Int): Boolean = value % 2 == 0
+}
+
+val result = match(42) {
+    case(IsEven()) { "✅ 짝수입니다!" }
+    else_ { "❌ 홀수입니다!" }
+}
+```
+
+### 8. 💬 액션 내 스마트 인자 처리
+```kotlin
+val result = match(Person("홍길동", 35)) {
+    caseOf<Person> { "안녕하세요, ${it.name}님!" }
+    else_ { "누구세요?" }
+}
+```
+
+### 9. 📋 매칭 과정 로그 기록 (SnapshotBinder)
 
 매칭 과정의 입력값, 사용된 패턴, 매칭 결과(`Matched`, `NotMatched`, `Skipped`)를 **시간순으로 추적**할 수 있습니다.
 
@@ -38,83 +104,13 @@ Kotlin은 강력한 타입 시스템을 갖고 있지만,
 val binder = SnapshotBinder()
 
 val result = match("hello", snapshotBinder = binder) {
-  whenType<String> { "String matched" }
-  else_ { "No match" }
+    whenType<String> { "String matched" }
+    else_ { "No match" }
 }
 
-// ✅ 스냅샷 로그 안전하게 출력
-val snapshots: List<Snapshot> = binder.getAll()
-snapshots.forEach {
-  println("✅ Status: ${it.status}, Value: ${it.value}, Pattern: ${it.pattern}")
+binder.getAll().forEachIndexed { index: Int, snap: Snapshot ->
+    println("[$index] ${snap.status} | ${snap.value} | ${snap.pattern}")
 }
-```
-
----
-
-## 🎯 Custom Pattern & Evaluator
-
-기본 DSL 외에도 복잡한 조건이나 도메인 특화 매칭을 위해 **직접 Pattern과 Evaluator를 정의**할 수 있습니다.
-
-### 1. Pattern 정의
-
-```kotlin
-class CustomPattern : Pattern<Any> {
-    override fun match(value: Any): Boolean =
-        value is String && value.startsWith("hey")
-
-    override fun getType(): Class<*> = String::class.java
-}
-```
-
-### 2. Evaluator 구현
-
-```kotlin
-class CustomPatternEvaluator : PatternEvaluator<Any> {
-    override fun supports(pattern: Pattern<*>) = pattern is CustomPattern
-
-    override fun evaluate(pattern: Pattern<Any>, value: Any): PatternMatchResult {
-        val custom = pattern as CustomPattern
-        return if (custom.match(value)) {
-            PatternMatchResult.Success(value)
-        } else {
-            PatternMatchResult.Failure("Custom mismatch")
-        }
-    }
-}
-```
-
-### 3. CompositeEvaluator에 등록
-
-```kotlin
-val evaluator = CompositeEvaluator(
-  listOf(
-    DefaultPatternEvaluator(),
-    CustomPatternEvaluator()
-  )
-)
-```
-
-### 4. MatchBuilder에서 사용
-
-```kotlin
-val binder = SnapshotBinder()
-val customPattern = CustomPattern()
-
-val builder = MatchBuilder<Any, String>(evaluator, binder)
-
-builder.case(customPattern) { value: Any ->
-  "🎯 CustomPattern 매칭: $value"
-}
-
-builder.else_ { "매칭 안됨: $it" }
-
-val result = builder.evaluate("hey there")
-
-val logs: List<Snapshot> = binder.getAll()
-logs.forEach {
-  println("🎯 CustomPattern 매칭: value=${it.value}, status=${it.status}")
-}
-// 🎯 CustomPattern 매칭: value=hey there, status=Matched
 ```
 
 ---
@@ -195,32 +191,23 @@ dependencies {
 ## 🧱 Architecture Overview
 ```mermaid
 graph TD
-    User["👤 DSL 호출"]
+    User["👤 match { case ... }"]
+    MATCH["🧠 match() 함수"]
     MB["🧱 MatchBuilder"]
-    CTX["🌿 MatchContext"]
-    CE["🧩 CompositeEvaluator"]
-    EVAL1["⚙️ DefaultPatternEvaluator"]
-    EVAL2["🛠 CustomPatternEvaluator"]
-    TP["🔤 TypePattern"]
-    VP["🔢 ValuePattern"]
-    DP["📦 DestructurePattern"]
-    PC["📃 PredicateCondition"]
-    AND["➕ AndPattern"]
-    OR["🔀 OrPattern"]
-    SNAP["🧾 Snapshot 기록 (선택)"]
-    MR["✅ PatternMatchResult"]
+    CASE["🔍 case(), whenType(), caseOf()"]
+    VALUE["📥 입력값 (value)"]
+    EVAL["⚙️ PatternEvaluator (ServiceLoader)"]
+    PATTERN["🎯 Pattern 종류"]
+    RESULT["✅ PatternMatchResult"]
+    SNAP["🧾 Snapshot 저장 (옵션)"]
 
-    User --> MB --> CTX --> CE
-    CE --> EVAL1
-    CE --> EVAL2
-    EVAL1 --> TP
-    EVAL1 --> VP
-    EVAL1 --> DP
-    EVAL1 --> PC
-    EVAL1 --> AND
-    EVAL1 --> OR
-    CE --> SNAP
-    CE --> MR
+    User --> MATCH --> MB
+    MB --> CASE
+    MATCH --> VALUE
+    MATCH --> EVAL
+    EVAL --> PATTERN
+    EVAL --> RESULT
+    MATCH --> SNAP
 ```
 ## 📝 License
 
